@@ -1,17 +1,19 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { products as allProducts } from '@/lib/products';
+import { allProducts } from '@/lib/products';
 import type { Product } from '@/types';
 import { CategoryFilter } from '@/components/CategoryFilter';
 import { ProductCard } from '@/components/ProductCard';
+import { TopRatedSection } from '@/components/TopRatedSection';
 
-export default function Home({
+export default async function Home({
   searchParams,
 }: {
   searchParams: { category?: string };
 }) {
-  const { category } = searchParams;
+  const params = await searchParams;
+  const { category } = params;
 
   const filteredProducts = category
     ? allProducts.filter((p) => p.category === category)
@@ -22,7 +24,7 @@ export default function Home({
       <section className="relative h-[60vh] min-h-[400px] bg-background flex items-center justify-center text-center p-4">
         <div className="absolute inset-0 bg-primary/20 z-0">
           <Image
-            src="https://placehold.co/1800x800.png"
+            src="https://www.shutterstock.com/shutterstock/photos/2169453139/display_1500/stock-vector-hand-drawn-abstract-seamless-pattern-ethnic-background-simple-style-great-for-textiles-2169453139.jpg"
             alt="African market scene"
             fill
             className="object-cover opacity-30"
@@ -42,6 +44,8 @@ export default function Home({
           </Button>
         </div>
       </section>
+
+      <TopRatedSection />
 
       <section id="products" className="py-16 sm:py-24">
         <div className="container mx-auto px-4">

@@ -1,4 +1,4 @@
-import { products } from '@/lib/products';
+import { allProducts } from '@/lib/products';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { AddToCart } from '@/components/AddToCart';
@@ -6,13 +6,14 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 
 export async function generateStaticParams() {
-  return products.map((product) => ({
+  return allProducts.map((product) => ({
     id: product.id.toString(),
   }));
 }
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
-  const product = products.find((p) => p.id.toString() === params.id);
+export default async function ProductDetailPage({ params }: { params: { id: string } }) {
+  const routeParams = await params;
+  const product = allProducts.find((p) => p.id.toString() === routeParams.id);
 
   if (!product) {
     notFound();

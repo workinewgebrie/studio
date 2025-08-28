@@ -3,15 +3,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/hooks/useCart";
+import { usePayment } from "@/hooks/usePayment";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, CreditCard } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export function CartView() {
-  const { cart, updateQuantity, removeFromCart, totalPrice } = useCart();
+  const { cart, updateQuantity, removeFromCart, totalPrice, clearCart } = useCart();
+  const { processPayment, isLoading, error } = usePayment();
+  const { toast } = useToast();
 
   if (cart.length === 0) {
     return (
@@ -99,7 +103,32 @@ export function CartView() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button className="w-full" size="lg">Proceed to Checkout</Button>
+            <Button 
+              className="w-full" 
+              size="lg" 
+              onClick={async () => {
+                const totalAmount = totalPrice + 10; // Including shipping
+                await processPayment(totalAmount, 'usd', cart);
+                // Clear cart after successful payment
+                clearCart();
+              }}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <CreditCard className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Proceed to Checkout
+                </>
+              )}
+            </Button>
+            {error && (
+              <p className="text-red-500 text-sm mt-2">{error}</p>
+            )}
           </CardFooter>
         </Card>
       </div>
